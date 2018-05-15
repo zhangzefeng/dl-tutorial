@@ -7,7 +7,7 @@ train_data_dir = 'data/train'
 validation_data_dir = 'data/validation'
 nb_train_samples = 2000
 nb_validation_samples = 800
-epochs = 50
+epochs = 5
 batch_size = 16
 
 input_shape = (img_width, img_height, 3) # 150x150x3
