@@ -1,7 +1,4 @@
 import os
-#os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-#os.environ["CUDA_VISIBLE_DEVICES"]="0"
-
 import keras
 from matplotlib import pyplot as plt
 import numpy as np
@@ -105,7 +102,7 @@ x_test_noisy = np.clip(x_test_noisy, 0., 1.)
 #plt.show()
 
 batch_size = 128
-epochs = 50
+epochs = 10
 inChannel = 1
 x, y = 28, 28
 input_img = Input(shape = (x, y, inChannel))
@@ -125,14 +122,15 @@ def autoencoder(input_img):
     conv5 = Conv2D(64, (3, 3), activation='relu', padding='same')(up1) # 14 x 14 x 64
     up2 = UpSampling2D((2,2))(conv5) # 28 x 28 x 64
     decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same')(up2) # 28 x 28 x 1
-    flatten = Flatten()(up2)
+    flatten = Flatten()(conv3)
     hidden = Dense(64)(flatten)
-    cla = Dense(10, activation='softmax')(hidden)
+#    cla = Dense(10, activation='softmax')(hidden)
+    cla = Dense(10, activation='sigmoid')(hidden)
     return cla
 
 autoencoder = Model(input_img, autoencoder(input_img))
 checkpoint="classifier.checkpoint"
-load=checkpoint + "/checkpoint-03.hdf5"
+load=checkpoint + "/checkpoint-.hdf5"
 if os.path.isfile(load):
     autoencoder.load_weights(load)
 autoencoder.compile(loss='mean_squared_error', optimizer = RMSprop())
@@ -141,9 +139,11 @@ autoencoder.summary()
 filepath=checkpoint + "/checkpoint-{epoch:02d}.hdf5"
 checkpoint = ModelCheckpoint(filepath, verbose=1, save_best_only=True)
 if not os.path.isfile(load):
-    autoencoder_train = autoencoder.fit(train_X, train_ground, batch_size=batch_size, nb_epoch=epochs, verbose=1,validation_data=(valid_X, valid_ground), callbacks=[checkpoint])
+#    autoencoder_train = autoencoder.fit(train_X, train_ground, batch_size=batch_size, epochs=epochs, verbose=1,validation_data=(valid_X, valid_ground), callbacks=[checkpoint])
+    autoencoder_train = autoencoder.fit(x_train_noisy, train_ground, batch_size=batch_size, epochs=epochs, verbose=1,validation_data=(x_valid_noisy, valid_ground), callbacks=[checkpoint])
 
-pred = autoencoder.predict(test_data)
+#pred = autoencoder.predict(test_data)
+pred = autoencoder.predict(x_test_noisy)
 print pred.shape
 
 import sys
@@ -151,7 +151,7 @@ import sys
 # print("Test Images")
 # for i in range(10):
 #     plt.subplot(2, 10, i+1)
-#     plt.imshow(test_data[i, ..., 0], cmap='gray')
+#     plt.imshow(x_test_noisy[i, ..., 0], cmap='gray')
 #     curr_lbl = test_labels[i]
 #     plt.title("(Label: " + str(label_dict[curr_lbl]) + ")")
 # print
@@ -166,3 +166,9 @@ print("prediction")
 for i in range(100):
     sys.stdout.write(label_dict[np.argmax(pred[i])])
 print
+
+match=0
+for i in range(10000):
+    if test_labels[i] == np.argmax(pred[i]):
+        match = match + 1
+print match

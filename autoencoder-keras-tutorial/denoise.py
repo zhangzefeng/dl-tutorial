@@ -135,7 +135,7 @@ autoencoder.summary()
 filepath=checkpoint + "/checkpoint-{epoch:02d}.hdf5"
 checkpoint = ModelCheckpoint(filepath, verbose=1, save_best_only=True)
 if not os.path.isfile(load):
-    autoencoder_train = autoencoder.fit(x_train_noisy, train_ground, batch_size=batch_size, nb_epoch=epochs, verbose=1,validation_data=(x_valid_noisy, valid_ground), callbacks=[checkpoint])
+    autoencoder_train = autoencoder.fit(x_train_noisy, train_ground, batch_size=batch_size, epochs=epochs, verbose=1,validation_data=(x_valid_noisy, valid_ground), callbacks=[checkpoint])
 
 pred = autoencoder.predict(x_test_noisy)
 print pred.shape
