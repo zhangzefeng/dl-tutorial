@@ -63,4 +63,4 @@ model.fit_generator(
     validation_data=validation_generator,
     validation_steps=nb_validation_samples)
 
-model.save_weights('first_try.h5')
+model.save_weights('first_try.hdf5')

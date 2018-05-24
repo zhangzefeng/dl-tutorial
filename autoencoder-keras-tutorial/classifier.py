@@ -1,3 +1,8 @@
+#import random
+#random.seed(0)
+#import numpy.random
+#numpy.random.seed(0)
+
 import os
 import keras
 from matplotlib import pyplot as plt
@@ -10,9 +15,14 @@ from keras.callbacks import ModelCheckpoint
 
 checkpoint="classifier.checkpoint"
 load=checkpoint + "/checkpoint-.hdf5"
+
+kernel_initializer='glorot_uniform'
+bias_initializer='zeros'
+
 #initializer='random_uniform'
 #initializer='zeros'
 initializer='ones'
+
 #noisy=False
 noisy=True
 #activation='softmax'
@@ -20,6 +30,7 @@ activation='sigmoid'
 
 def extract_data(filename, num_images):
     with gzip.open(filename) as bytestream:
+
         bytestream.read(16)
         buf = bytestream.read(28 * 28 * num_images)
         data = np.frombuffer(buf, dtype=np.uint8).astype(np.float32)
@@ -121,30 +132,50 @@ def autoencoder(input_img):
     #encoder
     #input = 28 x 28 x 1 (wide and thin)
     conv1 = Conv2D(32, (3, 3), activation='relu', padding='same'
-#, kernel_initializer=initializer, bias_initializer=initializer
+#, kernel_initializer=kernel_initializer, bias_initializer=bias_initializer
 )(input_img) #28 x 28 x 32
     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1) #14 x 14 x 32
-    conv2 = Conv2D(64, (3, 3), activation='relu', padding='same')(pool1) #14 x 14 x 64
+    conv2 = Conv2D(64, (3, 3), activation='relu', padding='same'
+#, kernel_initializer=kernel_initializer, bias_initializer=bias_initializer
+)(pool1) #14 x 14 x 64
     pool2 = MaxPooling2D(pool_size=(2, 2))(conv2) #7 x 7 x 64
-    conv3 = Conv2D(128, (3, 3), activation='relu', padding='same')(pool2) #7 x 7 x 128 (small and thick)
+    conv3 = Conv2D(128, (3, 3), activation='relu', padding='same'
+#, kernel_initializer=kernel_initializer, bias_initializer=bias_initializer
+)(pool2) #7 x 7 x 128 (small and thick)
 
     #decoder
-    conv4 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv3) #7 x 7 x 128
+    conv4 = Conv2D(128, (3, 3), activation='relu', padding='same'
+#, kernel_initializer=kernel_initializer, bias_initializer=bias_initializer
+)(conv3) #7 x 7 x 128
     up1 = UpSampling2D((2,2))(conv4) # 14 x 14 x 128
-    conv5 = Conv2D(64, (3, 3), activation='relu', padding='same')(up1) # 14 x 14 x 64
+    conv5 = Conv2D(64, (3, 3), activation='relu', padding='same'
+#, kernel_initializer=kernel_initializer, bias_initializer=bias_initializer
+)(up1) # 14 x 14 x 64
     up2 = UpSampling2D((2,2))(conv5) # 28 x 28 x 64
-    decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same')(up2) # 28 x 28 x 1
+    decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same'
+#, kernel_initializer=kernel_initializer, bias_initializer=bias_initializer
+)(up2) # 28 x 28 x 1
 
-    conv6 = Conv2D(32, (3, 3), activation='relu', padding='same')(input_img)
+    conv6 = Conv2D(32, (3, 3), activation='relu', padding='same'
+#, kernel_initializer=kernel_initializer, bias_initializer=bias_initializer
+)(input_img)
     pool6 = MaxPooling2D(pool_size=(2, 2))(conv6)
-    conv7 = Conv2D(32, (3, 3), activation='relu', padding='same')(pool6)
+    conv7 = Conv2D(32, (3, 3), activation='relu', padding='same'
+#, kernel_initializer=kernel_initializer, bias_initializer=bias_initializer
+)(pool6)
     pool7 = MaxPooling2D(pool_size=(2, 2))(conv7)
-    conv8 = Conv2D(64, (3, 3), activation='relu', padding='same')(pool7)
+    conv8 = Conv2D(64, (3, 3), activation='relu', padding='same'
+#, kernel_initializer=kernel_initializer, bias_initializer=bias_initializer
+)(pool7)
     pool8 = MaxPooling2D(pool_size=(2, 2))(conv8)
 
     flatten = Flatten()(up2)
-    hidden = Dense(64)(flatten)
-    cla = Dense(10, activation=activation)(hidden)
+    hidden = Dense(64
+#, kernel_initializer=kernel_initializer, bias_initializer=bias_initializer
+)(flatten)
+    cla = Dense(10
+#, kernel_initializer=kernel_initializer, bias_initializer=bias_initializer
+, activation=activation)(hidden)
     return cla
 
 autoencoder = Model(input_img, autoencoder(input_img))
@@ -153,7 +184,7 @@ if loadweight:
     autoencoder.load_weights(load)
 autoencoder.compile(loss='mean_squared_error', optimizer = RMSprop())
 autoencoder.summary()
-print 'noisy=' + str(noisy) + ' activation=' + activation + ' init=' + initializer
+print 'noisy=' + str(noisy) + ' activation=' + activation + ' init=' + kernel_initializer + ':' + bias_initializer
 
 filepath=checkpoint + "/checkpoint-{epoch:02d}.hdf5"
 checkpoint = ModelCheckpoint(filepath, verbose=1, save_best_only=False)
