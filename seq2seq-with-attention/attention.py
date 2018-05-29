@@ -7,6 +7,7 @@ from keras.layers import LSTM
 from keras.layers import Dense
 from keras.layers import TimeDistributed
 from keras.layers import RepeatVector
+from attention_decoder import AttentionDecoder
 
 # generate a sequence of random integers
 def generate_sequence(length, n_unique):
@@ -44,10 +45,8 @@ n_timesteps_in = 5
 n_timesteps_out = 2
 # define model
 model = Sequential()
-model.add(LSTM(150, input_shape=(n_timesteps_in, n_features)))
-model.add(RepeatVector(n_timesteps_in))
-model.add(LSTM(150, return_sequences=True))
-model.add(TimeDistributed(Dense(n_features, activation='softmax')))
+model.add(LSTM(150, input_shape=(n_timesteps_in, n_features), return_sequences=True))
+model.add(AttentionDecoder(150, n_features))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])
 # train LSTM
 for epoch in range(5000):
