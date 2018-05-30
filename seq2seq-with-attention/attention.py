@@ -4,9 +4,6 @@ from numpy import argmax
 from numpy import array_equal
 from keras.models import Sequential
 from keras.layers import LSTM
-from keras.layers import Dense
-from keras.layers import TimeDistributed
-from keras.layers import RepeatVector
 from attention_decoder import AttentionDecoder
 
 # generate a sequence of random integers

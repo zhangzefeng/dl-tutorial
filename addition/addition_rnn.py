@@ -21,9 +21,10 @@ Five digits reversed:
 '''
 
 from __future__ import print_function
-from keras.models import Sequential
-from keras import layers
+
 import numpy as np
+from keras import layers
+from keras.models import Sequential
 from six.moves import range
 
 
@@ -33,6 +34,7 @@ class CharacterTable(object):
     + Decode the one hot integer representation to their character output
     + Decode a vector of probabilities to their character output
     """
+
     def __init__(self, chars):
         """Initialize character table.
         # Arguments
@@ -64,6 +66,7 @@ class colors:
     fail = '\033[91m'
     close = '\033[0m'
 
+
 # Parameters for the model and dataset.
 TRAINING_SIZE = 50000
 DIGITS = 3
@@ -83,7 +86,7 @@ seen = set()
 print('Generating data...')
 while len(questions) < TRAINING_SIZE:
     f = lambda: int(''.join(np.random.choice(list('0123456789'))
-                    for i in range(np.random.randint(1, DIGITS + 1))))
+                            for i in range(np.random.randint(1, DIGITS + 1))))
     a, b = f(), f()
     # Skip any addition questions we've already seen
     # Also skip any such that x+Y == Y+x (hence the sorting).
