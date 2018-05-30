@@ -182,7 +182,7 @@ autoencoder = Model(input_img, autoencoder(input_img))
 loadweight=os.path.isfile(load)
 if loadweight:
     autoencoder.load_weights(load)
-autoencoder.compile(loss='mean_squared_error', optimizer = RMSprop())
+autoencoder.compile(loss='categorical_crossentropy', optimizer='adam')
 autoencoder.summary()
 print 'noisy=' + str(noisy) + ' activation=' + activation + ' init=' + kernel_initializer + ':' + bias_initializer
 
