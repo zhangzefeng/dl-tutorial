@@ -101,7 +101,7 @@ while len(questions) < TRAINING_SIZE:
     # Answers can be of maximum size DIGITS + 1.
     ans += ' ' * (DIGITS + 1 - len(ans))
     if REVERSE:
-        # Reverse the query, e.g., '12+345  ' becomes '  543+21'. (Note the
+        # Reverse the query, e.g., '12+345 ' becomes ' 543+21'. (Note the
         # space used for padding.)
         query = query[::-1]
     questions.append(query)
